@@ -29,7 +29,9 @@ d3.json('world-110m.json', function(error, world) {
   // Create land area
   svg.append('path')
     .datum(land)
-    .attr('class', 'land')
+    .attr('fill', 'red') //This is the property that sets map-wide color.
+			 //Need to figure out how to do this on a country
+			 //basis.
     .attr('d', path);
 
   // Create state boundaries
