@@ -1,3 +1,8 @@
+// Pull in FAO data 
+d3.csv("2013.csv", function(sample) {
+  console.log(sample[0]);
+});
+
 // Map code taken from datavis-interactive lab
 
 // Set up the SVG
