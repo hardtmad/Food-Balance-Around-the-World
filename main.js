@@ -36,12 +36,7 @@ d3.json('world-110m.json', function(error, world) {
 			 //basis.
     .attr('d', path);
 
-  // Create state boundaries
-  svg.append('path')
-    .datum(boundaries)
-    .attr('class', 'state-boundary')
-    .attr('d', path);
-
+  //Fill in countries by distinct colors
   svg.selectAll('.country')
       .data(countries)
       .enter()
@@ -50,4 +45,9 @@ d3.json('world-110m.json', function(error, world) {
       	.attr('d', path)
       	.style('fill', function(d, i) { return color(d.color = d3.max(neighbors[i], function(n) { return countries[n].color; }) + 1 | 0); });
 
+  // Create state boundaries
+  svg.append('path')
+    .datum(boundaries)
+    .attr('class', 'state-boundary')
+    .attr('d', path);
 });
