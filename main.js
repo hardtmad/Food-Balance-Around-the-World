@@ -41,7 +41,10 @@ var interpolateColors = function (color1, color2, steps) {
 }
 
 var colorSet = interpolateColors("rgb(138, 255, 132)", "rgb(0, 56, 0)", 25);
-console.log(colorSet);
+
+for (var j = 0; j < 25; j++) {
+  colorSet[j] = "rgb(" + colorSet[j][0] + "," + colorSet[j][1] + "," + colorSet[j][2] + ")";
+}
 
 var color = d3.scaleOrdinal(colorSet);
 
