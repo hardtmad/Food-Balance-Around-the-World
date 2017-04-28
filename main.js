@@ -1,7 +1,25 @@
 // Pull in FAO data 
 d3.csv("2013.csv", function(sample) {
-  console.log(sample[0]);
-});
+
+// Use crossfilter 
+var amounts = crossfilter(sample);
+
+var countryDim = amounts.dimension(d => d.Country);
+console.log(countryDim.group(d => "Afghanistan").top(2));
+
+//var afstats = countryDim.filter("Afghanistan");
+//console.log(afstats.group().reduceCount);
+
+//var countMeasure = afstats.group().reduceCount();
+//console.log(countMeasure.size());
+//var a = countMeasure.top(4);
+//
+//console.log(amtsByCountry);
+//var amtsByYear = amounts.dimension(d => d.Year);
+//var amtsByItem = amounts.dimension(d => d.Item);
+//var amtsByProdType = amounts.dimension(d => d.Element);
+
+
 
 // Map code taken from datavis-interactive lab
 
@@ -37,4 +55,9 @@ d3.json('world-110m.json', function(error, world) {
     .datum(countries)
     .attr('class', 'state-boundary')
     .attr('d', path);
+});
+
+//updateView();
+
+
 });
