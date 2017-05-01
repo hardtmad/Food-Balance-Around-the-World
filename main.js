@@ -77,11 +77,16 @@ d3.json('world-110m.json', function(error, world) {
       .append('path')
       	.attr('class', 'country')
       	.attr('d', path)
-      	.style('fill', function(d, i) { return color(d.color = d3.max(neighbors[i], function(n) { return countries[n].color; }) + 1 | 0); });
-
-  // Create country boundaries
-  svg.append('path')
-    .datum(boundaries)
-    .attr('class', 'state-boundary')
-    .attr('d', path);
+      	.style('fill', function(d, i) { return color(d.color = d3.max(neighbors[i], function(n) { return countries[n].color; }) + 1 | 0); })
+      	.style('stroke', '#fff')
+      	.on("mouseover", function () {
+      		this.parentNode.appendChild(this);
+    		d3.select(this)
+    		  .style('stroke', '#000');
+    	})
+    	.on("mouseout", function() {
+    	    d3.select(this)
+    		  .style('stroke', '#fff')
+    		  .style('zIndex', 10);
+    	});
 });
