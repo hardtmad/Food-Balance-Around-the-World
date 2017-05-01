@@ -98,8 +98,7 @@ d3.json('world-110m.json', function(error, world) {
     	})
     	.on("mouseout", function() {
     	    d3.select(this)
-    		  .style('stroke', '#fff')
-    		  .style('zIndex', 10);
+    		  .style('stroke', '#fff');
     	});
    });
 });
