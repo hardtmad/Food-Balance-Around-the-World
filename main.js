@@ -5,7 +5,22 @@ d3.csv("2013.csv", function(sample) {
 var amounts = crossfilter(sample);
 
 var countryDim = amounts.dimension(d => d.Country);
-console.log(countryDim.group(d => "Afghanistan").top(2));
+//console.log(countryDim);
+
+console.log(countryDim.group().reduceSum(function(d) 
+    {
+      if (d.Element == "Domestic supply quantity")  
+        {return (d.Value * -1) }
+      else 
+        {return d.Value}
+    } ).all());
+
+
+
+var countryGroup = countryDim.filter("Afghanistan")
+//.log(countryGroup)
+
+//console.log(amounts)
 
 //var afstats = countryDim.filter("Afghanistan");
 //console.log(afstats.group().reduceCount);
