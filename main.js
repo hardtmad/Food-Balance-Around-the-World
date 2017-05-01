@@ -1,7 +1,19 @@
 // Pull in FAO data 
 d3.csv("2013.csv", function(sample) {
-  console.log(sample[0]);
-});
+
+// Use crossfilter 
+  var amounts = crossfilter(sample);
+  // Make a dimension with the Country field
+  var countryDim = amounts.dimension(function (d) { return d.Country; } );
+  // Sum all values for each country, adding for production and subtracting for domestic supply
+  // NEEDS ATTENTION: Fix this formula to be ((production/domestic supply quantity)/100)
+  console.log(countryDim.group().reduceSum(function(d) 
+      {
+        if (d.Element == "Domestic supply quantity")  
+          {return (d.Value * -1) }
+        else 
+          {return d.Value}
+      } ).all());
 
 // Map code taken from datavis-interactive lab
 
@@ -89,4 +101,5 @@ d3.json('world-110m.json', function(error, world) {
     		  .style('stroke', '#fff')
     		  .style('zIndex', 10);
     	});
+   });
 });
