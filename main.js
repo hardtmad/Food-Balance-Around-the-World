@@ -1,5 +1,6 @@
 // Pull in FAO data 
 d3.csv("2013.csv", function(sample) {
+  d3.csv("world-country-names.tsv", function(country-names) {
 
   // Use crossfilter 
   var amounts = crossfilter(sample);
@@ -89,12 +90,14 @@ d3.csv("2013.csv", function(sample) {
         .append('path')
         	.attr('class', 'country')
         	.attr('d', path)
-        	.style('fill', function(d, i) { return color(d.color = d3.max(neighbors[i], function(n) { return countries[n].color; }) + 1 | 0); });
+        	.style('fill', function(d, i) { return color(d.color = d3.max(neighbors[i], function(n) { return countries[n].color; }) + 1 | 0); })
+            .on("click", function (d) {console.log (d.geometry.coordinates[0][0]) });
 
     // Create country boundaries
     svg.append('path')
       .datum(boundaries)
       .attr('class', 'state-boundary')
       .attr('d', path);
+  });
   });
 });
