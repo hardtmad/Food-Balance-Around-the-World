@@ -29,8 +29,8 @@ d3.json('world-110m.json', function(error, world) {
 	projection.fitSize([svg_width, svg_height], land);
 
 	svg.append('path')
-    .datum(land);
-    //.attr('d', path);
+    .datum(land)
+    .attr('d', path);
 
 	svg.selectAll('.country')
 	      .data(currentCountry)
