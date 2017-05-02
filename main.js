@@ -7,13 +7,13 @@ d3.csv("2013.csv", function(sample) {
   var countryDim = amounts.dimension(function (d) { return d.Country; } );
   // Sum all values for each country, adding for production and subtracting for domestic supply
   // NEEDS ATTENTION: Fix this formula to be ((production/domestic supply quantity)/100)
-  console.log(countryDim.group().reduceSum(function(d) 
-      {
-        if (d.Element == "Domestic supply quantity")  
-          {return (d.Value * -1) }
-        else 
-          {return d.Value}
-      } ).all());
+  //console.log(countryDim.group().reduceSum(function(d) 
+  //    {
+  //      if (d.Element == "Domestic supply quantity")  
+  //        {return (d.Value * -1) }
+   //     else 
+   //       {return d.Value}
+   //   } ).all());
 
 // Map code taken from datavis-interactive lab
 
@@ -60,6 +60,11 @@ for (var j = 0; j < 25; j++) {
 
 var color = d3.scaleOrdinal(colorSet);
 
+var changeContexts = function (d) {
+	window.location.href = "country.html";
+	//console.log(d.id);
+};
+
 // Generate an SVG element on the page
 var svg = d3.select("body").append("svg")
     .attr("width", svg_width)
@@ -77,9 +82,6 @@ d3.json('world-110m.json', function(error, world) {
   // Create land area
   svg.append('path')
     .datum(land)
-     //This is the property that sets map-wide color.
-			 //Need to figure out how to do this on a country
-			 //basis.
     .attr('d', path);
 
   //Fill in countries by distinct colors
@@ -99,6 +101,9 @@ d3.json('world-110m.json', function(error, world) {
     	.on("mouseout", function() {
     	    d3.select(this)
     		  .style('stroke', '#fff');
+    	})
+    	.on("click", function(d) {
+    		changeContexts(d);
     	});
    });
 });
