@@ -1,5 +1,6 @@
 // Pull in FAO data 
 d3.csv("2013.csv", function(sample) {
+  d3.csv("world-country-names.tsv", function(country-names) {
 
 // Use crossfilter 
   var amounts = crossfilter(sample);
