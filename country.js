@@ -13,10 +13,31 @@ var getURLParameter = function (name) {
 
 var countryId = getURLParameter('id');
 
-console.log(countryId);
+var svg = d3.select("body").append("svg")
+    .attr("width", svg_width)
+    .attr("height", svg_height);
 
 d3.json('world-110m.json', function(error, world) {
-var countries = topojson.feature(world, world.objects.countries).features;
-var currentCountry = countries.filter(function (x) { return x.id === 'countryId' } );
-console.log(currentCountry);
+	var land = topojson.feature(world, world.objects.land);
+	var countries = topojson.feature(world, world.objects.countries).features;
+	var currentCountry = countries.filter(function (x) { 
+		if (x.id == countryId) {
+			return x;
+		} 
+	});
+
+	projection.fitSize([svg_width, svg_height], land);
+
+	svg.append('path')
+    .datum(land);
+    //.attr('d', path);
+
+	svg.selectAll('.country')
+	      .data(currentCountry)
+	      .enter()
+	      .append('path')
+	      	.attr('class', 'country')
+	      	.attr('d', path)
+	      	.style('fill', function(d, i) { return color(d.color = d3.max(neighbors[i], function(n) { return countries[n].color; }) + 1 | 0); })
+	      	.style('stroke', '#fff');
 });
