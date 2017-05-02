@@ -61,8 +61,7 @@ for (var j = 0; j < 25; j++) {
 var color = d3.scaleOrdinal(colorSet);
 
 var changeContexts = function (d) {
-	window.location.href = "country.html";
-	//console.log(d.id);
+	window.location.href = "country.html?id=" + d.id;
 };
 
 // Generate an SVG element on the page
@@ -73,7 +72,6 @@ var svg = d3.select("body").append("svg")
 d3.json('world-110m.json', function(error, world) {
   // Decode the topojson file
   var land = topojson.feature(world, world.objects.land);
-  var boundaries = topojson.mesh(world, world.objects.countries);
   var countries = topojson.feature(world, world.objects.countries).features;
   var neighbors = topojson.neighbors(world.objects.countries.geometries);
   // Fit our projection so it fills the window
