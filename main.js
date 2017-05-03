@@ -1,20 +1,20 @@
 // Pull in FAO data 
 d3.csv("2013.csv", function(sample) {
-  d3.csv("world-country-names.tsv", function(country-names) {
+  d3.tsv("world-country-names.tsv", function(country_names) {
 
-// Use crossfilter 
+// Use crossfilter for FAO data
   var amounts = crossfilter(sample);
   // Make a dimension with the Country field
   var countryDim = amounts.dimension(function (d) { return d.Country; } );
   // Sum all values for each country, adding for production and subtracting for domestic supply
   // NEEDS ATTENTION: Fix this formula to be ((production/domestic supply quantity)/100)
-  console.log(countryDim.group().reduceSum(function(d) 
+ /*console.log(countryDim.group().reduceSum(function(d) 
       {
         if (d.Element == "Domestic supply quantity")  
           {return (d.Value * -1) }
         else 
           {return d.Value}
-      } ).all());
+      } ).all());*/
 
 // Map code taken from datavis-interactive lab
 
@@ -74,6 +74,21 @@ d3.json('world-110m.json', function(error, world) {
   var neighbors = topojson.neighbors(world.objects.countries.geometries);
   // Fit our projection so it fills the window
   projection.fitSize([svg_width, svg_height], land);
+
+  // Loop over countries to match map ids with naes
+  for (country of countries)
+  {
+    country.name = find_name(country.id);
+  }
+
+  // Find id in country_names
+  function find_name (id) {
+    for (entry of country_names) 
+    {
+      if (entry.id == id)
+        return entry.name;
+    }
+  }
   
   // Create land area
   svg.append('path')
@@ -100,6 +115,11 @@ d3.json('world-110m.json', function(error, world) {
     	.on("mouseout", function() {
     	    d3.select(this)
     		  .style('stroke', '#fff');
-    	});
+    	})
+      .on("click", function(d) {
+        d3.select(this)
+        console.log(d.name);
+      });
    });
+});
 });
