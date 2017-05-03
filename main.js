@@ -1,6 +1,6 @@
 // Pull in FAO data 
 d3.csv("2013.csv", function(sample) {
-  d3.csv("world-country-names.tsv", function(country-names) {
+  d3.csv("world-country-names.tsv", function(country_names) {
 
 // Use crossfilter 
   var amounts = crossfilter(sample);
@@ -8,13 +8,20 @@ d3.csv("2013.csv", function(sample) {
   var countryDim = amounts.dimension(function (d) { return d.Country; } );
   // Sum all values for each country, adding for production and subtracting for domestic supply
   // NEEDS ATTENTION: Fix this formula to be ((production/domestic supply quantity)/100)
-  console.log(countryDim.group().reduceSum(function(d) 
+ /* console.log(countryDim.group().reduceSum(function(d) 
       {
         if (d.Element == "Domestic supply quantity")  
           {return (d.Value * -1) }
         else 
           {return d.Value}
-      } ).all());
+      } ).all()); */
+
+// Use crossfilter 
+  var filtered_countries = crossfilter(country_names);
+  var idDim = filtered_countries.dimension(function (d) { return d.id })
+  var idGroup = idDim.group()
+  //console.log(idGroup.all())
+
 
 // Map code taken from datavis-interactive lab
 
@@ -74,6 +81,25 @@ d3.json('world-110m.json', function(error, world) {
   var neighbors = topojson.neighbors(world.objects.countries.geometries);
   // Fit our projection so it fills the window
   projection.fitSize([svg_width, svg_height], land);
+
+  console.log(countries);
+  for (country of countries)
+  {
+    //console.log(idGroup[country.id])
+    console.log(country.id);
+    //console.log(idGroup)
+  }
+
+  // Citation: https://bl.ocks.org/mbostock/4183330
+  fcountries = countries.filter(function(d) {
+    return country_names.some(function(n) {
+      if (d.id == n.id) return d.name = n.name;
+    });
+  }).sort(function(a, b) {
+    return a.name.localeCompare(b.name);
+  });
+
+  //console.log(fcountries)
   
   // Create land area
   svg.append('path')
@@ -100,6 +126,11 @@ d3.json('world-110m.json', function(error, world) {
     	.on("mouseout", function() {
     	    d3.select(this)
     		  .style('stroke', '#fff');
-    	});
+    	})
+      .on("click", function(d) {
+        d3.select(this)
+        console.log(this);
+      });
    });
+});
 });
