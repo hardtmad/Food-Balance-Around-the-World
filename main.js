@@ -1,6 +1,6 @@
 // Pull in FAO data 
 d3.csv("2013.csv", function(sample) {
-  d3.csv("world-country-names.tsv", function(country-names) {
+  d3.csv("world-country-names.tsv", function(country_names) {
 
 // Use crossfilter 
   var amounts = crossfilter(sample);
@@ -102,4 +102,6 @@ d3.json('world-110m.json', function(error, world) {
     		  .style('stroke', '#fff');
     	});
    });
+});
+
 });
