@@ -12,6 +12,8 @@ var getURLParameter = function (name) {
 }
 
 var countryId = getURLParameter('id');
+var countryColor = getURLParameter('color');
+console.log(countryColor);
 
 var svg = d3.select("body").append("svg")
     .attr("width", svg_width)
@@ -42,6 +44,6 @@ d3.json('world-110m.json', function(error, world) {
 	      	.attr('d', path)
 	      	.style('opacity', 1.0)
 	      	.style('fill', '#000')
-	      	//.style('fill', function(d, i) { return color(d.color = d3.max(neighbors[i], function(n) { return countries[n].color; }) + 1 | 0); })
+	      	.style('fill', countryColor)
 	      	.style('stroke', '#fff');
 });
