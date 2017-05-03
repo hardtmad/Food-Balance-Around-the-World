@@ -29,8 +29,10 @@ d3.json('world-110m.json', function(error, world) {
 	projection.fitSize([svg_width, svg_height], land);
 
 	svg.append('path')
-    .datum(land)
-    .attr('d', path);
+       .datum(land)
+       .attr('d', path)
+       .style('fill', '#aaa')
+       .style('opacity', 0.25);
 
 	svg.selectAll('.country')
 	      .data(currentCountry)
@@ -38,6 +40,8 @@ d3.json('world-110m.json', function(error, world) {
 	      .append('path')
 	      	.attr('class', 'country')
 	      	.attr('d', path)
-	      	.style('fill', function(d, i) { return color(d.color = d3.max(neighbors[i], function(n) { return countries[n].color; }) + 1 | 0); })
+	      	.style('opacity', 1.0)
+	      	.style('fill', '#000')
+	      	//.style('fill', function(d, i) { return color(d.color = d3.max(neighbors[i], function(n) { return countries[n].color; }) + 1 | 0); })
 	      	.style('stroke', '#fff');
 });

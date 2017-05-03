@@ -60,8 +60,9 @@ for (var j = 0; j < 25; j++) {
 
 var color = d3.scaleOrdinal(colorSet);
 
-var changeContexts = function (d) {
-	window.location.href = "country.html?id=" + d.id;
+var changeContexts = function (d, color) {
+	console.log(color);
+	//window.location.href = "country.html?id=" + d.id + "&color=" + color;
 };
 
 // Generate an SVG element on the page
@@ -101,7 +102,7 @@ d3.json('world-110m.json', function(error, world) {
     		  .style('stroke', '#fff');
     	})
     	.on("click", function(d) {
-    		changeContexts(d);
+    		changeContexts(d, this.style.fill);
     	});
    });
 });
