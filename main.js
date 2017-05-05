@@ -4,17 +4,21 @@ d3.csv("2013.csv", function(sample) {
 
 // Use crossfilter 
   var amounts = crossfilter(sample);
-  // Make a dimension with the Country field
-  var countryDim = amounts.dimension(function (d) { return d.Country; } );
+  // Make a dimension with the Country field, group by Element and Country
+  var countryDim = amounts.dimension(function (d) { 
+                                      var thisElement = d.Element;
+                                      return 'Element='+thisElement+';Country='+d.Country; } );
   // Sum all values for each country, adding for production and subtracting for domestic supply
   // NEEDS ATTENTION: Fix this formula to be ((production/domestic supply quantity)/100)
- /* console.log(countryDim.group().reduceSum(function(d) 
+  console.log(countryDim.group().reduceSum(function(d) 
       {
         if (d.Element == "Domestic supply quantity")  
-          {return (d.Value * -1) }
+          { 
+            return (d.Value * -1) }
         else 
-          {return d.Value}
-      } ).all()); */
+          { 
+            return d.Value}
+      } ).all());
 
 // Use crossfilter 
   var filtered_countries = crossfilter(country_names);
