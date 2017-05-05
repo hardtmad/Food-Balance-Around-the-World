@@ -116,6 +116,11 @@ d3.csv("2013.csv", function(sample) {
       }
     };
 
+    	// Create land area
+	    svg.append('path')
+	       .datum(land)
+	       .attr('d', path);
+
 		//Fill in countries by distinct colors
 		svg.selectAll('.country')
 		      	.data(countries)
@@ -125,35 +130,6 @@ d3.csv("2013.csv", function(sample) {
 		      		.attr('d', path);
 
 		updateView(countries, neighbors, null);
-      
-      // Create land area
-      svg.append('path')
-        .datum(land)
-        .attr('d', path);
-
-      //Fill in countries by distinct colors
-      svg.selectAll('.country')
-          .data(countries)
-          .enter()
-          .append('path')
-          	.attr('class', 'country')
-          	.attr('d', path)
-          	.style('fill', function(d, i) { return color(d.color = d3.max(neighbors[i], function(n) { return countries[n].color; }) + 1 | 0); })
-          	.style('stroke', '#fff')
-            // Embolden outline on mouseover
-          	.on("mouseover", function () {
-          		this.parentNode.appendChild(this);
-        	   	d3.select(this)
-        		  .style('stroke', '#000');
-        	})
-          // Remove outline on mouseout
-        	.on("mouseout", function() {
-        	    d3.select(this)
-        		  .style('stroke', '#fff');
-        	})
-          .on("click", function(d) {
-            d3.select(this)
-          });
 
        });// end d3.json
   }); // end d3.tsv
