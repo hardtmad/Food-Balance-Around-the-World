@@ -41,7 +41,7 @@ d3.csv("2013.csv", function(sample) {
 
 	// Set up the SVG
 	var svg_width = window.innerWidth;
-	var svg_height = window.innerHeight;
+	var svg_height = window.innerHeight - 75;
 
 	// Use d3's built in projection object 
 	var projection = d3.geoMercator();
@@ -53,9 +53,6 @@ d3.csv("2013.csv", function(sample) {
 	for (var j = 0; j < 25; j++) {
 	  colorSet[j] = "rgb(" + colorSet[j][0] + "," + colorSet[j][1] + "," + colorSet[j][2] + ")";
 	}
-
-  // Scale color set 
-	var color = d3.scaleOrdinal(colorSet);
 
 	// Generate an SVG element on the page
 	var svg = d3.select("body").append("svg")
@@ -79,7 +76,14 @@ d3.csv("2013.csv", function(sample) {
 	          country.suff = current_suff;
 	        else 
 	          country.suff = 0;
-    	  }
+    	}
+
+    	// Scale color set 
+    	var minSuff = d3.min(countries, function (d) { return d.suff });
+    	var maxSuff = d3.max(countries, function (d) { return d.suff });
+		var color = d3.scaleLinear()
+					  .domain([minSuff, maxSuff])
+					  .range([colorSet[0], colorSet[13]]);
 
     // Helper function: Update view function if a country is clicked
     var updateView = function (countries, neighbors, selectedCountry) {
@@ -132,6 +136,8 @@ d3.csv("2013.csv", function(sample) {
 		      		.attr('d', path);
 
 		updateView(countries, neighbors, null);
+
+		//d3.slider().axis(true).min(1961).max(2013);
 
        });// end d3.json
   }); // end d3.tsv
