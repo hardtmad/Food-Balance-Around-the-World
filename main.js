@@ -12,7 +12,6 @@ d3.csv("2013.csv", function(sample) {
   // NEEDS ATTENTION: Fix this formula to be ((production/domestic supply quantity)/100)
 
   var ElementCountry = (countryDim.group().reduceSum(function(d) 
-
       {
         if (d.Element == "Domestic supply quantity")  
           { 
@@ -27,19 +26,11 @@ d3.csv("2013.csv", function(sample) {
   var formulaResult = [];
   for(i=0; i<175; i++) {
     var currentDict = {};
-    currentDict.key = ElementCountry[i].key;
+    currentDict.key = ElementCountry[i].key.replace("Element=Domestic supply quantity;Country=", "");
     currentDict.value = ElementCountry[i+175].value*100/ElementCountry[i].value;
     formulaResult.push(currentDict);
   }
   console.log(formulaResult);
-
-
-  console.log(suffs);
-
-  for (suff of suffs)
-  {
-    console.log(suff)
-  }
 
 // Map code taken from datavis-interactive lab
 
@@ -127,7 +118,7 @@ d3.json('world-110m.json', function(error, world) {
 
   // Function to find sufficiency given country name
   function find_suff (name) {
-    for (suff of suffs) 
+    for (suff of formulaResult) 
     {
       if (name == suff.key)
         return suff.value;
