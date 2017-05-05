@@ -4,19 +4,35 @@ d3.csv("2013.csv", function(sample) {
 
 // Use crossfilter for FAO data
   var amounts = crossfilter(sample);
-  // Make a dimension with the Country field
-  var countryDim = amounts.dimension(function (d) { return d.Country; } );
+  // Make a dimension with the Country field, group by Element and Country
+  var countryDim = amounts.dimension(function (d) { 
+                                      var thisElement = d.Element;
+                                      return 'Element='+thisElement+';Country='+d.Country; } );
   // Sum all values for each country, adding for production and subtracting for domestic supply
   // NEEDS ATTENTION: Fix this formula to be ((production/domestic supply quantity)/100)
-  var suffs = countryDim.group().reduceSum(function(d) 
+
+  var ElementCountry = (countryDim.group().reduceSum(function(d) 
+
       {
         if (d.Element == "Domestic supply quantity")  
-          {return (d.Value * -1) }
+          { 
+            return d.Value}
         else 
-          {
-            return d.Value
-          }
-      } ).all();
+          { 
+            return d.Value}
+      } ).all());
+
+  console.log(ElementCountry);
+
+  var formulaResult = [];
+  for(i=0; i<175; i++) {
+    var currentDict = {};
+    currentDict.key = ElementCountry[i].key;
+    currentDict.value = ElementCountry[i+175].value*100/ElementCountry[i].value;
+    formulaResult.push(currentDict);
+  }
+  console.log(formulaResult);
+
 
   console.log(suffs);
 
