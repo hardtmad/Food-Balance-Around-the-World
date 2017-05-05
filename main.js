@@ -40,11 +40,11 @@ d3.csv("2013.csv", function(sample) {
   // Map code taken from datavis-interactive lab
 
 	// Set up the SVG
-	var svg_width = window.innerWidth;
-	var svg_height = window.innerHeight - 75;
+	var svg_width = window.innerWidth - 300;
+	var svg_height = window.innerHeight - 40;
 
 	// Use d3's built in projection object 
-	var projection = d3.geoMercator();
+	var projection = d3.geoEquirectangular();
 	var path = d3.geoPath().projection(projection);
 
   // Calculate color set 
@@ -57,7 +57,9 @@ d3.csv("2013.csv", function(sample) {
 	// Generate an SVG element on the page
 	var svg = d3.select("body").append("svg")
 	    .attr("width", svg_width)
-	    .attr("height", svg_height);
+	    .attr("height", svg_height)
+	    .style("display", "block")
+	    .style("margin", "auto");
 
 	d3.json('world-110m.json', function(error, world) {
 		// Decode the topojson file
