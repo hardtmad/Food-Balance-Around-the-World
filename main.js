@@ -19,7 +19,7 @@ d3.csv("2013.csv", function(sample) {
 
 	// Set up the SVG
 	var svg_width = window.innerWidth;
-	var svg_height = window.innerHeight;
+	var svg_height = window.innerHeight - 125;
 
 	// Use d3's built in projection object 
 	var projection = d3.geoMercator();
@@ -126,4 +126,6 @@ d3.csv("2013.csv", function(sample) {
 
 		updateView(countries, neighbors, null);
 	});
+
+	d3.slider().axis(true).min(1961).max(2013);
 });
