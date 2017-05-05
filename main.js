@@ -1,20 +1,30 @@
 // Pull in FAO data 
 d3.csv("2013.csv", function(sample) {
-
-	// Use crossfilter 
-	  var amounts = crossfilter(sample);
-	  // Make a dimension with the Country field
-	  var countryDim = amounts.dimension(function (d) { return d.Country; } );
-	  // Sum all values for each country, adding for production and subtracting for domestic supply
-	  // NEEDS ATTENTION: Fix this formula to be ((production/domestic supply quantity)/100)
-	  //console.log(countryDim.group().reduceSum(function(d) 
-	  //    {
-	  //      if (d.Element == "Domestic supply quantity")  
-	  //        {return (d.Value * -1) }
-	   //     else 
-	   //       {return d.Value}
-	   //   } ).all());
-
+  d3.tsv("world-country-names.tsv", function(country_names) {
+    // Use crossfilter for FAO data
+    var amounts = crossfilter(sample);
+    // Make a dimension with the Country field, group by Element and Country
+    var countryDim = amounts.dimension(function (d) { 
+                                        var thisElement = d.Element;
+                                        return 'Element='+thisElement+';Country='+d.Country; } );
+    // Sum all production and supply values for each country
+    var ElementCountry = (countryDim.group().reduceSum(function(d) 
+        {
+          if (d.Element == "Domestic supply quantity")  
+            { 
+              return d.Value}
+          else 
+            { 
+              return d.Value}
+        } ).all());
+ // Score each country with the formula (prodcution/domestic supply)*100
+    var formulaResult = [];
+    for(i=0; i<175; i++) {
+      var currentDict = {};
+      currentDict.key = ElementCountry[i].key.replace("Element=Domestic supply quantity;Country=", "");
+      currentDict.value = ElementCountry[i+175].value*100/ElementCountry[i].value;
+      formulaResult.push(currentDict);
+    }
 	// Map code taken from datavis-interactive lab
 
 	// Set up the SVG
@@ -127,3 +137,56 @@ d3.csv("2013.csv", function(sample) {
 		updateView(countries, neighbors, null);
 	});
 });
+      
+  // Helper function to find id in country_names
+    function find_name (id) {
+      for (entry of country_names) 
+        {
+          if (entry.id == id)
+            return entry.name;
+        }
+      }
+
+      // Helper function to find sufficiency given country name
+      function find_suff (name) {
+        for (suff of formulaResult) 
+        {
+          if (name == suff.key)
+            return suff.value;
+        }
+      }
+      
+      // Create land area
+      svg.append('path')
+        .datum(land)
+        .attr('d', path);
+
+      //Fill in countries by distinct colors
+      svg.selectAll('.country')
+          .data(countries)
+          .enter()
+          .append('path')
+          	.attr('class', 'country')
+          	.attr('d', path)
+          	.style('fill', function(d, i) { return color(d.color = d3.max(neighbors[i], function(n) { return countries[n].color; }) + 1 | 0); })
+          	.style('stroke', '#fff')
+            // Embolden outline on mouseover
+          	.on("mouseover", function () {
+          		this.parentNode.appendChild(this);
+        		d3.select(this)
+        		  .style('stroke', '#000');
+        	})
+          // Remove outline on mouseout
+        	.on("mouseout", function() {
+        	    d3.select(this)
+        		  .style('stroke', '#fff');
+        	})
+          .on("click", function(d) {
+            d3.select(this)
+            // Uncomment to log the name of the clicked country
+            //console.log(d.name);
+          });
+
+       });// end d3.json
+  }); // end d3.tsv
+}); // end d3.csv
