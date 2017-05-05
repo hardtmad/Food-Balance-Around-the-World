@@ -81,7 +81,6 @@ d3.csv("2013.csv", function(sample) {
       var land = topojson.feature(world, world.objects.land);
       var boundaries = topojson.mesh(world, world.objects.countries);
       var countries = topojson.feature(world, world.objects.countries).features;
-      console.log (countries);
       var neighbors = topojson.neighbors(world.objects.countries.geometries);
       // Fit our projection so it fills the window
       projection.fitSize([svg_width, svg_height], land);
@@ -142,9 +141,10 @@ d3.csv("2013.csv", function(sample) {
         	})
           .on("click", function(d) {
             d3.select(this)
-            console.log(d.name);
+            // Uncomment to log the name of the clicked country
+            //console.log(d.name);
           });
-          
+
        });// end d3.json
   }); // end d3.tsv
 }); // end d3.csv
