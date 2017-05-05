@@ -102,6 +102,7 @@ d3.csv("2013.csv", function(sample) {
         .data(countries)
         .attr('class', 'country')
         .attr('d', path)
+        .style('stroke', '#fff')
         .style('fill', function(d, i) { if (d.id == selectedCountry.id) {
           return color(d.color = d.id);
            } 
