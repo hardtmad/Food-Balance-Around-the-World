@@ -61,12 +61,10 @@ d3.csv("2013.csv", function(sample) {
 	var color = d3.scaleOrdinal(colorSet);
 
 	var updateView = function (countries, neighbors, selectedCountry) {
-		console.log("Echo");
 		if (selectedCountry == null) {
+			console.log("Echo");
 			svg.selectAll('.country')
 		      	.data(countries)
-		      	.enter()
-		      	.append('path')
 		      		.attr('class', 'country')
 		      		.attr('d', path)
 		      		.style('fill', function(d, i) { return color(d.color = d3.max(neighbors[i], function(n) { return countries[n].color; }) + 1 | 0); })
@@ -87,16 +85,13 @@ d3.csv("2013.csv", function(sample) {
 			console.log("Butt");
 			svg.selectAll('.country')
 			   	.data(countries)
-			   	.enter()
-			   	.append('path')
 			   		.attr('class', 'country')
 			   		.attr('d', path)
-			   		.style('fill', function(d) { if (d.id == selectedCountry.id) {
+			   		.style('fill', function(d, i) { if (d.id == selectedCountry.id) {
 			   			return color(d.color = d3.max(neighbors[i], function(n) { return countries[n].color; }) + 1 | 0);
 			   		} else {
 			   			return '#aaa';
 			   		}})
-			   		.style('stroke', 'none')
 			   		.on("mouseover", function () {})
 			   		.on("mouseout", function () {})
 			   		.on("click", function(d) {
@@ -124,6 +119,27 @@ d3.csv("2013.csv", function(sample) {
 		   .attr('d', path);
 
 		//Fill in countries by distinct colors
+		svg.selectAll('.country')
+		      	.data(countries)
+		      	.enter()
+		      	.append('path')
+		      		.attr('class', 'country')
+		      		.attr('d', path)
+		      		.style('fill', function(d, i) { return color(d.color = d3.max(neighbors[i], function(n) { return countries[n].color; }) + 1 | 0); })
+		      		.style('stroke', '#fff')
+		      		.on("mouseover", function () {
+		      			this.parentNode.appendChild(this);
+		    			d3.select(this)
+		    		 	  .style('stroke', '#000');
+		    		})
+		    		.on("mouseout", function() {
+		    	    	d3.select(this)
+		    		  	  .style('stroke', '#fff');
+		    		})
+		    		.on("click", function(d) {
+		    			updateView(countries, neighbors, d);
+		    		});
+
 		updateView(countries, neighbors, null);
 	});
 });
