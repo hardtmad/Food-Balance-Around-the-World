@@ -1,8 +1,8 @@
 // Pull in FAO data 
 d3.csv("2013.csv", function(sample) {
-  d3.csv("world-country-names.tsv", function(country_names) {
+  d3.tsv("world-country-names.tsv", function(country_names) {
 
-// Use crossfilter 
+// Use crossfilter for FAO data
   var amounts = crossfilter(sample);
   // Make a dimension with the Country field, group by Element and Country
   var countryDim = amounts.dimension(function (d) { 
@@ -10,7 +10,9 @@ d3.csv("2013.csv", function(sample) {
                                       return 'Element='+thisElement+';Country='+d.Country; } );
   // Sum all values for each country, adding for production and subtracting for domestic supply
   // NEEDS ATTENTION: Fix this formula to be ((production/domestic supply quantity)/100)
+
   var ElementCountry = (countryDim.group().reduceSum(function(d) 
+
       {
         if (d.Element == "Domestic supply quantity")  
           { 
@@ -32,12 +34,12 @@ d3.csv("2013.csv", function(sample) {
   console.log(formulaResult);
 
 
-// Use crossfilter 
-  var filtered_countries = crossfilter(country_names);
-  var idDim = filtered_countries.dimension(function (d) { return d.id })
-  var idGroup = idDim.group()
-  //console.log(idGroup.all())
+  console.log(suffs);
 
+  for (suff of suffs)
+  {
+    console.log(suff)
+  }
 
 // Map code taken from datavis-interactive lab
 
@@ -94,28 +96,43 @@ d3.json('world-110m.json', function(error, world) {
   var land = topojson.feature(world, world.objects.land);
   var boundaries = topojson.mesh(world, world.objects.countries);
   var countries = topojson.feature(world, world.objects.countries).features;
+  console.log (countries);
   var neighbors = topojson.neighbors(world.objects.countries.geometries);
   // Fit our projection so it fills the window
   projection.fitSize([svg_width, svg_height], land);
 
-  console.log(countries);
+  // Loop over countries to match map ids with naes
   for (country of countries)
   {
-    //console.log(idGroup[country.id])
-    console.log(country.id);
-    //console.log(idGroup)
+    country.name = find_name(country.id);
+    current_suff = find_suff(country.name)
+    if (!current_suff)
+    {
+      country.suff = 0;
+    }
+    else 
+      country.suff = current_suff;
+    console.log(country.name)
+    console.log(country.suff)
   }
 
-  // Citation: https://bl.ocks.org/mbostock/4183330
-  fcountries = countries.filter(function(d) {
-    return country_names.some(function(n) {
-      if (d.id == n.id) return d.name = n.name;
-    });
-  }).sort(function(a, b) {
-    return a.name.localeCompare(b.name);
-  });
+  // Function to find id in country_names
+  function find_name (id) {
+    for (entry of country_names) 
+    {
+      if (entry.id == id)
+        return entry.name;
+    }
+  }
 
-  //console.log(fcountries)
+  // Function to find sufficiency given country name
+  function find_suff (name) {
+    for (suff of suffs) 
+    {
+      if (name == suff.key)
+        return suff.value;
+    }
+  }
   
   // Create land area
   svg.append('path')
@@ -145,7 +162,7 @@ d3.json('world-110m.json', function(error, world) {
     	})
       .on("click", function(d) {
         d3.select(this)
-        console.log(this);
+        console.log(d.name);
       });
    });
 });
