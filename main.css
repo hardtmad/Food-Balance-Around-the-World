@@ -19,3 +19,9 @@
 .country {
   fill: #ccc;
 }
+
+p span {
+	display:inline;
+	white-space:pre-wrap;
+	padding: 5px 5px 5px 5px;
+}
