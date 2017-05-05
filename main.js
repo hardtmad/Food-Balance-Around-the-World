@@ -2,9 +2,20 @@
 d3.csv("2013.csv", function(sample) {
   d3.tsv("world-country-names.tsv", function(country_names) {
 
-    /*  ----------------------
-        ---------DATA---------
-        ---------------------- */
+  /*  ----------------------
+      ---------KEY---------
+      ---------------------- */
+    // Adjust div with key
+    var d = document.getElementById('key');
+    d.style.position = "absolute";
+    d.style.left = 10 + 'px';
+    d.style.top = 250 + 'px';
+    d.style.height = 320 + 'px';
+    d.style.width = 220 + 'px';
+
+  /*  ----------------------
+      ---------DATA---------
+      ---------------------- */
 
     // Use crossfilter for FAO data
     var amounts = crossfilter(sample);
@@ -12,6 +23,9 @@ d3.csv("2013.csv", function(sample) {
     var countryDim = amounts.dimension(function (d) { 
                                         var thisElement = d.Element;
                                         return 'Element='+thisElement+';Country='+d.Country; } );
+
+     console.log(sample)
+
     // Sum all production and supply values for each country
     var ElementCountry = (countryDim.group().reduceSum(function(d) 
         {
@@ -33,9 +47,9 @@ d3.csv("2013.csv", function(sample) {
       formulaResult.push(currentDict);
     }
 	
-    /*  ----------------------
-        ---------MAP---------
-        ---------------------- */
+  /*  ----------------------
+      ---------MAP---------
+      ---------------------- */
 
   // Map code taken from datavis-interactive lab
 
@@ -108,6 +122,10 @@ d3.csv("2013.csv", function(sample) {
         .on("click", function(d) {
           updateView(countries, neighbors, d);
         });
+        document.getElementById("key")
+         .innerHTML = ("");
+        document.getElementById("key")
+         .style.border = "0px";  
     } 
     else {
     	document.getElementById("header").innerHTML = "Food Self-Sufficiency in " + selectedCountry.name;
@@ -124,6 +142,13 @@ d3.csv("2013.csv", function(sample) {
         .on("click", function(d) {
           updateView(countries, neighbors, null);
         });
+        var keyText = getKeyText(selectedCountry, sample);
+        console.log(keyText)
+        console.log(selectedCountry);
+      document.getElementById("key")
+        .append(keyText);
+      document.getElementById("key")
+        .style.border = "solid #000000";      
       }
     };
 
@@ -138,11 +163,9 @@ d3.csv("2013.csv", function(sample) {
 		updateView(countries, neighbors, null);
 
 		//d3.slider().axis(true).min(1961).max(2013);
-
        });// end d3.json
   }); // end d3.tsv
 }); // end d3.csv
-
 
 /*  ----------------------
     ---HELPER FUNCTIONS---
@@ -190,4 +213,39 @@ function find_suff (name, formulaResult) {
       if (name == suff.key)
         return suff.value;
     }
+};
+
+// Helper function to find id in FAO data
+function find_data(name, data)
+{
+  var results = [];
+  for (entry of data)
+  {
+    if (entry.Country == name)
+      results.push(entry);
+  }
+  console.log(results);
+  return results;
+}
+
+// Helper function to generate legend text
+function getKeyText(country, data) {
+  var str = "Name: ";
+  str += "" + (country.name);
+  str += "\nSufficiency score: " ;
+  str += parseFloat(country.suff).toFixed(2) + "\n";
+  var data = find_data(country.name, data)
+  console.log(data)
+
+  for (i=0; i<8; i++)
+  {
+      if (data[i])
+      {
+        str += data[i].Element + " ";
+        str += data[i].Item + " ";
+        str += data[i].Value + " ";
+        str += "\n";
+      }
+  }
+  return str;
 };
