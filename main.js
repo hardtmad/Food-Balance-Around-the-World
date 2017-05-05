@@ -10,15 +10,27 @@ d3.csv("2013.csv", function(sample) {
                                       return 'Element='+thisElement+';Country='+d.Country; } );
   // Sum all values for each country, adding for production and subtracting for domestic supply
   // NEEDS ATTENTION: Fix this formula to be ((production/domestic supply quantity)/100)
-  console.log(countryDim.group().reduceSum(function(d) 
+  var ElementCountry = (countryDim.group().reduceSum(function(d) 
       {
         if (d.Element == "Domestic supply quantity")  
           { 
-            return (d.Value * -1) }
+            return d.Value}
         else 
           { 
             return d.Value}
       } ).all());
+
+  console.log(ElementCountry);
+
+  var formulaResult = [];
+  for(i=0; i<175; i++) {
+    var currentDict = {};
+    currentDict.key = ElementCountry[i].key;
+    currentDict.value = ElementCountry[i+175].value*100/ElementCountry[i].value;
+    formulaResult.push(currentDict);
+  }
+  console.log(formulaResult);
+
 
 // Use crossfilter 
   var filtered_countries = crossfilter(country_names);
