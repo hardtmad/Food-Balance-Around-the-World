@@ -8,13 +8,22 @@ d3.csv("2013.csv", function(sample) {
   var countryDim = amounts.dimension(function (d) { return d.Country; } );
   // Sum all values for each country, adding for production and subtracting for domestic supply
   // NEEDS ATTENTION: Fix this formula to be ((production/domestic supply quantity)/100)
- /*console.log(countryDim.group().reduceSum(function(d) 
+  var suffs = countryDim.group().reduceSum(function(d) 
       {
         if (d.Element == "Domestic supply quantity")  
           {return (d.Value * -1) }
         else 
-          {return d.Value}
-      } ).all());*/
+          {
+            return d.Value
+          }
+      } ).all();
+
+  console.log(suffs);
+
+  for (suff of suffs)
+  {
+    console.log(suff)
+  }
 
 // Map code taken from datavis-interactive lab
 
@@ -71,6 +80,7 @@ d3.json('world-110m.json', function(error, world) {
   var land = topojson.feature(world, world.objects.land);
   var boundaries = topojson.mesh(world, world.objects.countries);
   var countries = topojson.feature(world, world.objects.countries).features;
+  console.log (countries);
   var neighbors = topojson.neighbors(world.objects.countries.geometries);
   // Fit our projection so it fills the window
   projection.fitSize([svg_width, svg_height], land);
@@ -79,14 +89,32 @@ d3.json('world-110m.json', function(error, world) {
   for (country of countries)
   {
     country.name = find_name(country.id);
+    current_suff = find_suff(country.name)
+    if (!current_suff)
+    {
+      country.suff = 0;
+    }
+    else 
+      country.suff = current_suff;
+    console.log(country.name)
+    console.log(country.suff)
   }
 
-  // Find id in country_names
+  // Function to find id in country_names
   function find_name (id) {
     for (entry of country_names) 
     {
       if (entry.id == id)
         return entry.name;
+    }
+  }
+
+  // Function to find sufficiency given country name
+  function find_suff (name) {
+    for (suff of suffs) 
+    {
+      if (name == suff.key)
+        return suff.value;
     }
   }
   
