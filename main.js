@@ -70,9 +70,21 @@ d3.csv("2013.csv", function(sample) {
 		// Fit our projection so it fills the window
 		projection.fitSize([svg_width, svg_height], land);
 
+		// Loop over countries to match map ids with names and names with sufficiency scores
+      	for (country of countries)
+      	{
+      		country.name = find_name(country.id, country_names);
+	        current_suff = find_suff(country.name, formulaResult)
+	        if (current_suff)
+	          country.suff = current_suff;
+	        else 
+	          country.suff = 0;
+    	  }
+
     // Helper function: Update view function if a country is clicked
     var updateView = function (countries, neighbors, selectedCountry) {
     if (selectedCountry == null) {
+    	document.getElementById("header").innerHTML = "Food Self-Sufficiency Worldwide";
       svg.selectAll('.country')
         .data(countries)
         .attr('class', 'country')
@@ -94,6 +106,7 @@ d3.csv("2013.csv", function(sample) {
         });
     } 
     else {
+    	document.getElementById("header").innerHTML = "Food Self-Sufficiency in " + selectedCountry.name;
       svg.selectAll('.country')
         .data(countries)
         .attr('class', 'country')
@@ -156,7 +169,7 @@ var interpolateColors = function (color1, color2, steps) {
 };
 
 // Helper function to find id in country_names
-function find_name (id) {
+function find_name (id, country_names) {
 for (entry of country_names) 
   {
     if (entry.id == id)
@@ -165,7 +178,7 @@ for (entry of country_names)
 };
 
 // Helper function to find sufficiency given country name
-function find_suff (name) {
+function find_suff (name, formulaResult) {
     for (suff of formulaResult) 
     {
       if (name == suff.key)
