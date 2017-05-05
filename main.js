@@ -69,11 +69,6 @@ d3.csv("2013.csv", function(sample) {
 		var neighbors = topojson.neighbors(world.objects.countries.geometries);
 		// Fit our projection so it fills the window
 		projection.fitSize([svg_width, svg_height], land);
-		  
-		// Create land area
-		svg.append('path')
-		   .datum(land)
-		   .attr('d', path);
 
     // Helper function: Update view function if a country is clicked
     var updateView = function (countries, neighbors, selectedCountry) {
@@ -83,6 +78,7 @@ d3.csv("2013.csv", function(sample) {
         .attr('class', 'country')
         .attr('d', path)
         .style('fill', function(d, i) { return color(d.color = d.id); })
+        .style('opacity', 1.0)
         .style('stroke', '#fff')
         .on("mouseover", function () {
           this.parentNode.appendChild(this);
@@ -103,12 +99,9 @@ d3.csv("2013.csv", function(sample) {
         .attr('class', 'country')
         .attr('d', path)
         .style('stroke', '#fff')
-        .style('fill', function(d, i) { if (d.id == selectedCountry.id) {
-          return color(d.color = d.id);
-           } 
-           else {
-            return '#aaa';
-          }})
+        .style('opacity', function(d) { if (d.id != selectedCountry.id)
+        	return 0.5;
+        })
         .on("mouseover", function () {})
         .on("mouseout", function () {})
         .on("click", function(d) {
@@ -116,11 +109,6 @@ d3.csv("2013.csv", function(sample) {
         });
       }
     };
-
-    	// Create land area
-	    svg.append('path')
-	       .datum(land)
-	       .attr('d', path);
 
 		//Fill in countries by distinct colors
 		svg.selectAll('.country')
