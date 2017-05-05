@@ -1,6 +1,11 @@
 // Pull in FAO data 
 d3.csv("2013.csv", function(sample) {
   d3.tsv("world-country-names.tsv", function(country_names) {
+
+    /*  ----------------------
+        ---------DATA---------
+        ---------------------- */
+
     // Use crossfilter for FAO data
     var amounts = crossfilter(sample);
     // Make a dimension with the Country field, group by Element and Country
@@ -17,15 +22,22 @@ d3.csv("2013.csv", function(sample) {
             { 
               return d.Value}
         } ).all());
- // Score each country with the formula (prodcution/domestic supply)*100
+    // Score each country with the formula (prodcution/domestic supply)*100
     var formulaResult = [];
     for(i=0; i<175; i++) {
       var currentDict = {};
+      // Change key to be country name
       currentDict.key = ElementCountry[i].key.replace("Element=Domestic supply quantity;Country=", "");
+      // Calculate sufficiency score
       currentDict.value = ElementCountry[i+175].value*100/ElementCountry[i].value;
       formulaResult.push(currentDict);
     }
-	// Map code taken from datavis-interactive lab
+	
+    /*  ----------------------
+        ---------MAP---------
+        ---------------------- */
+
+  // Map code taken from datavis-interactive lab
 
 	// Set up the SVG
 	var svg_width = window.innerWidth;
@@ -35,78 +47,15 @@ d3.csv("2013.csv", function(sample) {
 	var projection = d3.geoMercator();
 	var path = d3.geoPath().projection(projection);
 
-	//Citation: Interpolate color functions taken from
-	//https://graphicdesign.stackexchange.com/questions/83866/generating-a-series-of-colors-between-two-colors
-	var interpolateColor = function (color1, color2, factor) {
-	    if (arguments.length < 3) { 
-	        factor = 0.5; 
-	    }
-	    var result = color1.slice();
-	    for (var i = 0; i < 3; i++) {
-	        result[i] = Math.round(result[i] + factor * (color2[i] - color1[i]));
-	    }
-	    return result;
-	};
-
-	var interpolateColors = function (color1, color2, steps) {
-	    var stepFactor = 1 / (steps - 1),
-	        interpolatedColorArray = [];
-
-	    color1 = color1.match(/\d+/g).map(Number);
-	    color2 = color2.match(/\d+/g).map(Number);
-
-	    for(var i = 0; i < steps; i++) {
-	        interpolatedColorArray.push(interpolateColor(color1, color2, stepFactor * i));
-	    }
-
-	    return interpolatedColorArray;
-	}
-
+  // Calculate color set 
 	var colorSet = interpolateColors("rgb(138, 255, 132)", "rgb(0, 56, 0)", 25);
 
 	for (var j = 0; j < 25; j++) {
 	  colorSet[j] = "rgb(" + colorSet[j][0] + "," + colorSet[j][1] + "," + colorSet[j][2] + ")";
 	}
 
+  // Scale color set 
 	var color = d3.scaleOrdinal(colorSet);
-
-	var updateView = function (countries, neighbors, selectedCountry) {
-		if (selectedCountry == null) {
-			svg.selectAll('.country')
-		      	.data(countries)
-		      		.attr('class', 'country')
-		      		.attr('d', path)
-		      		.style('fill', function(d, i) { return color(d.color = d.id); })
-		      		.style('stroke', '#fff')
-		      		.on("mouseover", function () {
-		      			this.parentNode.appendChild(this);
-		    			d3.select(this)
-		    		 	  .style('stroke', '#000');
-		    		})
-		    		.on("mouseout", function() {
-		    	    	d3.select(this)
-		    		  	  .style('stroke', '#fff');
-		    		})
-		    		.on("click", function(d) {
-		    			updateView(countries, neighbors, d);
-		    		});
-		} else {
-			svg.selectAll('.country')
-			   	.data(countries)
-			   		.attr('class', 'country')
-			   		.attr('d', path)
-			   		.style('fill', function(d, i) { if (d.id == selectedCountry.id) {
-			   			return color(d.color = d.id);
-			   		} else {
-			   			return '#aaa';
-			   		}})
-			   		.on("mouseover", function () {})
-			   		.on("mouseout", function () {})
-			   		.on("click", function(d) {
-			   			updateView(countries, neighbors, null);
-			   		});
-		}
-	};
 
 	// Generate an SVG element on the page
 	var svg = d3.select("body").append("svg")
@@ -126,6 +75,47 @@ d3.csv("2013.csv", function(sample) {
 		   .datum(land)
 		   .attr('d', path);
 
+    // Helper function: Update view function if a country is clicked
+    var updateView = function (countries, neighbors, selectedCountry) {
+    if (selectedCountry == null) {
+      svg.selectAll('.country')
+        .data(countries)
+        .attr('class', 'country')
+        .attr('d', path)
+        .style('fill', function(d, i) { return color(d.color = d.id); })
+        .style('stroke', '#fff')
+        .on("mouseover", function () {
+          this.parentNode.appendChild(this);
+          d3.select(this)
+          .style('stroke', '#000');
+        })
+        .on("mouseout", function() {
+          d3.select(this)
+          .style('stroke', '#fff');
+        })
+        .on("click", function(d) {
+          updateView(countries, neighbors, d);
+        });
+    } 
+    else {
+      svg.selectAll('.country')
+        .data(countries)
+        .attr('class', 'country')
+        .attr('d', path)
+        .style('fill', function(d, i) { if (d.id == selectedCountry.id) {
+          return color(d.color = d.id);
+           } 
+           else {
+            return '#aaa';
+          }})
+        .on("mouseover", function () {})
+        .on("mouseout", function () {})
+        .on("click", function(d) {
+          updateView(countries, neighbors, null);
+        });
+      }
+    };
+
 		//Fill in countries by distinct colors
 		svg.selectAll('.country')
 		      	.data(countries)
@@ -135,26 +125,6 @@ d3.csv("2013.csv", function(sample) {
 		      		.attr('d', path);
 
 		updateView(countries, neighbors, null);
-	});
-});
-      
-  // Helper function to find id in country_names
-    function find_name (id) {
-      for (entry of country_names) 
-        {
-          if (entry.id == id)
-            return entry.name;
-        }
-      }
-
-      // Helper function to find sufficiency given country name
-      function find_suff (name) {
-        for (suff of formulaResult) 
-        {
-          if (name == suff.key)
-            return suff.value;
-        }
-      }
       
       // Create land area
       svg.append('path')
@@ -173,7 +143,7 @@ d3.csv("2013.csv", function(sample) {
             // Embolden outline on mouseover
           	.on("mouseover", function () {
           		this.parentNode.appendChild(this);
-        		d3.select(this)
+        	   	d3.select(this)
         		  .style('stroke', '#000');
         	})
           // Remove outline on mouseout
@@ -183,10 +153,57 @@ d3.csv("2013.csv", function(sample) {
         	})
           .on("click", function(d) {
             d3.select(this)
-            // Uncomment to log the name of the clicked country
-            //console.log(d.name);
           });
 
        });// end d3.json
   }); // end d3.tsv
 }); // end d3.csv
+
+
+/*  ----------------------
+    ---HELPER FUNCTIONS---
+    ---------------------- */
+
+//Citation: Interpolate color functions taken from
+//https://graphicdesign.stackexchange.com/questions/83866/generating-a-series-of-colors-between-two-colors
+var interpolateColor = function (color1, color2, factor) {
+if (arguments.length < 3) { 
+    factor = 0.5; 
+}
+var result = color1.slice();
+for (var i = 0; i < 3; i++) {
+    result[i] = Math.round(result[i] + factor * (color2[i] - color1[i]));
+}
+return result;
+};
+
+var interpolateColors = function (color1, color2, steps) {
+  var stepFactor = 1 / (steps - 1),
+  interpolatedColorArray = [];
+
+  color1 = color1.match(/\d+/g).map(Number);
+  color2 = color2.match(/\d+/g).map(Number);
+  for(var i = 0; i < steps; i++) {
+    interpolatedColorArray.push(interpolateColor(color1, color2, stepFactor * i));
+  }
+
+  return interpolatedColorArray; 
+};
+
+// Helper function to find id in country_names
+function find_name (id) {
+for (entry of country_names) 
+  {
+    if (entry.id == id)
+      return entry.name;
+  }
+};
+
+// Helper function to find sufficiency given country name
+function find_suff (name) {
+    for (suff of formulaResult) 
+    {
+      if (name == suff.key)
+        return suff.value;
+    }
+};
