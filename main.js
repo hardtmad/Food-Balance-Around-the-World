@@ -62,12 +62,11 @@ d3.csv("2013.csv", function(sample) {
 
 	var updateView = function (countries, neighbors, selectedCountry) {
 		if (selectedCountry == null) {
-			console.log("Echo");
 			svg.selectAll('.country')
 		      	.data(countries)
 		      		.attr('class', 'country')
 		      		.attr('d', path)
-		      		.style('fill', function(d, i) { return color(d.color = d3.max(neighbors[i], function(n) { return countries[n].color; }) + 1 | 0); })
+		      		.style('fill', function(d, i) { return color(d.color = d.id); })
 		      		.style('stroke', '#fff')
 		      		.on("mouseover", function () {
 		      			this.parentNode.appendChild(this);
@@ -82,13 +81,12 @@ d3.csv("2013.csv", function(sample) {
 		    			updateView(countries, neighbors, d);
 		    		});
 		} else {
-			console.log("Butt");
 			svg.selectAll('.country')
 			   	.data(countries)
 			   		.attr('class', 'country')
 			   		.attr('d', path)
 			   		.style('fill', function(d, i) { if (d.id == selectedCountry.id) {
-			   			return color(d.color = d3.max(neighbors[i], function(n) { return countries[n].color; }) + 1 | 0);
+			   			return color(d.color = d.id);
 			   		} else {
 			   			return '#aaa';
 			   		}})
@@ -124,21 +122,7 @@ d3.csv("2013.csv", function(sample) {
 		      	.enter()
 		      	.append('path')
 		      		.attr('class', 'country')
-		      		.attr('d', path)
-		      		.style('fill', function(d, i) { return color(d.color = d3.max(neighbors[i], function(n) { return countries[n].color; }) + 1 | 0); })
-		      		.style('stroke', '#fff')
-		      		.on("mouseover", function () {
-		      			this.parentNode.appendChild(this);
-		    			d3.select(this)
-		    		 	  .style('stroke', '#000');
-		    		})
-		    		.on("mouseout", function() {
-		    	    	d3.select(this)
-		    		  	  .style('stroke', '#fff');
-		    		})
-		    		.on("click", function(d) {
-		    			updateView(countries, neighbors, d);
-		    		});
+		      		.attr('d', path);
 
 		updateView(countries, neighbors, null);
 	});
