@@ -114,7 +114,7 @@ var changeDataset = function(year) {
     // Helper function: Update view function if a country is clicked
       var updateView = function (countries, neighbors, selectedCountry) {
       if (selectedCountry == null) {
-        document.getElementById("header").innerHTML = "Food Self-Sufficiency Worldwide (" + year + ")";
+        document.getElementById("header").innerHTML = "Food Self-Sufficiency Worldwide (" + year.split(".")[0] + ")";
         svg.selectAll('.country')
           .data(countries)
           .attr('class', 'country')
@@ -140,7 +140,7 @@ var changeDataset = function(year) {
            .style.border = "0px";  
       } 
       else {
-        document.getElementById("header").innerHTML = "Food Self-Sufficiency in " + selectedCountry.name + " (" + year + ")";
+        document.getElementById("header").innerHTML = "Food Self-Sufficiency in " + selectedCountry.name + " (" + year.split(".")[0] + ")";
         svg.selectAll('.country')
           .data(countries)
           .attr('class', 'country')
@@ -154,7 +154,7 @@ var changeDataset = function(year) {
           .on("click", function(d) {
             updateView(countries, neighbors, null);
           });
-          var legendText = getlegendText(selectedCountry, year_data);
+          var legendText = getLegendText(selectedCountry, year_data, year);
           //console.log(legendText)
           //console.log(selectedCountry);
         document.getElementById("legend")
@@ -257,9 +257,9 @@ function find_legend_data(name, data)
 }
 
 // Helper function to generate legend text
-function getlegendText(country, data) {
+function getLegendText(country, data, year) {
   if (country.suff == 0)
-    var str = "No data for " + country.name;
+    var str = "No data for " + country.name + " in " + year.split(".")[0] + ".";
   else {
     var str = "Name: " + (country.name);
     str += "\nSufficiency score: " ;
