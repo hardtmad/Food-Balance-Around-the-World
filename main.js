@@ -53,14 +53,13 @@
     d.style.height = 300 + 'px';
     d.style.width = 220 + 'px';
 
-    var filename = "FAOdata/"
-    filename += "2012.csv"
-    var year = filename.split("/")
-    year = year[1].split(".")
-    year = year[0];
+var changeDataset = function(year) {
+
+	var fileName = "FAOdata/"
+	fileName += year;
 
   // Pull in FAO data 
-  d3.csv(filename, function(year_data) {
+  d3.csv(fileName, function(year_data) {
 
     /*  ----------------------
         ---------DATA---------
@@ -110,7 +109,7 @@
         var maxSuff = d3.max(countries, function (d) { return d.suff });
         var color = d3.scaleLinear()
               .domain([minSuff, maxSuff])
-              .range([colorSet[0], colorSet[13]]);
+              .range([colorSet[0], colorSet[24]]);
 
     // Helper function: Update view function if a country is clicked
       var updateView = function (countries, neighbors, selectedCountry) {
@@ -120,7 +119,7 @@
           .data(countries)
           .attr('class', 'country')
           .attr('d', path)
-          .style('fill', function(d, i) { return color(d.color = d.id); })
+          .style('fill', function(d, i) { return color(d.color = d.suff); })
           .style('opacity', 1.0)
           .style('stroke', '#fff')
           .on("mouseover", function () {
@@ -174,7 +173,17 @@
                 .attr('d', path);
 
       updateView(countries, neighbors, null);
+
   }); // end d3.csv
+}
+
+changeDataset("2013.csv");
+
+d3.select('#opts')
+  .on('change', function() {
+  	var newYear = d3.select(this).property('value');
+  	changeDataset(newYear);
+  });
 });// end d3.json
 }); // end d3.tsv
 
