@@ -53,15 +53,21 @@
     d.style.height = 300 + 'px';
     d.style.width = 220 + 'px';
 
+    var filename = "FAOdata/"
+    filename += "2012.csv"
+    var year = filename.split("/")
+    year = year[1].split(".")
+    year = year[0];
+
   // Pull in FAO data 
-  d3.csv("2013.csv", function(sample) {
+  d3.csv(filename, function(year_data) {
 
     /*  ----------------------
         ---------DATA---------
         ---------------------- */
 
       // Use crossfilter for FAO data
-      var amounts = crossfilter(sample);
+      var amounts = crossfilter(year_data);
       // Make a dimension with the Country field, group by Element and Country
       var countryDim = amounts.dimension(function (d) { 
                                           var thisElement = d.Element;
@@ -109,7 +115,7 @@
     // Helper function: Update view function if a country is clicked
       var updateView = function (countries, neighbors, selectedCountry) {
       if (selectedCountry == null) {
-        document.getElementById("header").innerHTML = "Food Self-Sufficiency Worldwide";
+        document.getElementById("header").innerHTML = "Food Self-Sufficiency Worldwide (" + year + ")";
         svg.selectAll('.country')
           .data(countries)
           .attr('class', 'country')
@@ -135,7 +141,7 @@
            .style.border = "0px";  
       } 
       else {
-        document.getElementById("header").innerHTML = "Food Self-Sufficiency in " + selectedCountry.name;
+        document.getElementById("header").innerHTML = "Food Self-Sufficiency in " + selectedCountry.name + " (" + year + ")";
         svg.selectAll('.country')
           .data(countries)
           .attr('class', 'country')
@@ -149,9 +155,9 @@
           .on("click", function(d) {
             updateView(countries, neighbors, null);
           });
-          var legendText = getlegendText(selectedCountry, sample);
-          console.log(legendText)
-          console.log(selectedCountry);
+          var legendText = getlegendText(selectedCountry, year_data);
+          //console.log(legendText)
+          //console.log(selectedCountry);
         document.getElementById("legend")
           .append(legendText);
         document.getElementById("legend")
@@ -230,14 +236,14 @@ function find_legend_data(name, data)
       results.push(entry);
   }
   for (r of results)
-    console.log(r.Value);
+    //console.log(r.Value);
   results = results.sort(function(a,b) {
     if (parseInt(a.Value) <= parseInt(b.Value))
       return 1
     else return -1});
-  console.log("sorted!")
+  //console.log("sorted!")
   for (r of results)
-    console.log (r.Value)
+    //console.log (r.Value)
   return results;
 }
 
