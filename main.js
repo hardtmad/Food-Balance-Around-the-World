@@ -156,8 +156,6 @@ var changeDataset = function(year) {
             updateView(countries, neighbors, null);
           });
           var legendText = getLegendText(selectedCountry, year_data, year);
-          //console.log(legendText)
-          //console.log(selectedCountry);
         document.getElementById("legend")
           .append(legendText);
         document.getElementById("legend")
