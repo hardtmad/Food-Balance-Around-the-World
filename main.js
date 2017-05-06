@@ -9,8 +9,8 @@ d3.csv("2013.csv", function(sample) {
     var d = document.getElementById('key');
     d.style.position = "absolute";
     d.style.left = 10 + 'px';
-    d.style.top = 250 + 'px';
-    d.style.height = 320 + 'px';
+    d.style.top = 280 + 'px';
+    d.style.height = 300 + 'px';
     d.style.width = 220 + 'px';
 
   /*  ----------------------
@@ -218,36 +218,44 @@ function find_suff (name, formulaResult) {
 };
 
 // Helper function to find id in FAO data
-function find_data(name, data)
+function find_legend_data(name, data)
 {
   var results = [];
   for (entry of data)
   {
-    if (entry.Country == name)
+    if (entry.Country == name && entry.Element == "Production")
       results.push(entry);
   }
-  console.log(results);
+  for (r of results)
+    console.log(r.Value);
+  results = results.sort(function(a,b) {
+    if (parseInt(a.Value) <= parseInt(b.Value))
+      return 1
+    else return -1});
+  console.log("sorted!")
+  for (r of results)
+    console.log (r.Value)
   return results;
 }
 
 // Helper function to generate legend text
 function getKeyText(country, data) {
-  var str = "Name: ";
-  str += "" + (country.name);
-  str += "\nSufficiency score: " ;
-  str += parseFloat(country.suff).toFixed(2) + "\n";
-  var data = find_data(country.name, data)
-  console.log(data)
+  if (country.suff == 0)
+    var str = "No data for " + country.name;
+  else {
+    var str = "Name: " + (country.name);
+    str += "\nSufficiency score: " ;
+    str += parseFloat(country.suff).toFixed(2);
+    str += "\nTop 10 produced items (in 1000 tonnes):" ;
+    var data = find_legend_data(country.name, data)
 
-  for (i=0; i<8; i++)
-  {
+    for (i=0; i<10; i++)
+    {
       if (data[i])
       {
-        str += data[i].Element + " ";
-        str += data[i].Item + " ";
-        str += data[i].Value + " ";
-        str += "\n";
+        str += ("\n" + data[i].Item + " " + data[i].Value);
       }
+    }
   }
   return str;
 };
