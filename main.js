@@ -53,8 +53,13 @@
     d.style.height = 300 + 'px';
     d.style.width = 220 + 'px';
 
+var changeDataset = function(year) {
+
+	var fileName = "FAOdata/"
+	fileName += year;
+
   // Pull in FAO data 
-  d3.csv("2013.csv", function(sample) {
+  d3.csv(fileName, function(sample) {
 
     /*  ----------------------
         ---------DATA---------
@@ -168,7 +173,17 @@
                 .attr('d', path);
 
       updateView(countries, neighbors, null);
+
   }); // end d3.csv
+}
+
+changeDataset("2013.csv");
+
+d3.select('#opts')
+  .on('change', function() {
+  	var newYear = eval(d3.select(this).property('value'));
+  	changeDataset(newYear);
+  });
 });// end d3.json
 }); // end d3.tsv
 
