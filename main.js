@@ -14,9 +14,9 @@
   var path = d3.geoPath().projection(projection);
 
   // Calculate color set used to color countries
-  var colorSet = interpolateColors("rgb(138, 255, 132)", "rgb(0, 56, 0)", 25);
+  var colorSet = interpolateColors("rgb(138, 255, 132)", "rgb(0, 0, 0)", 10);
 
-  for (var j = 0; j < 25; j++) {
+  for (var j = 0; j < 10; j++) {
     colorSet[j] = "rgb(" + colorSet[j][0] + "," + colorSet[j][1] + "," + colorSet[j][2] + ")";
   }
 
@@ -107,9 +107,9 @@ var changeDataset = function(year) {
     // Scale color set based on max and min sufficiency scores
         var minSuff = d3.min(countries, function (d) { return d.suff });
         var maxSuff = d3.max(countries, function (d) { return d.suff });
-        var color = d3.scaleLinear()
+        var color = d3.scaleSqrt()
               .domain([minSuff, maxSuff])
-              .range([colorSet[0], colorSet[24]]);
+              .range([colorSet[0], colorSet[9]]);
 
     // Helper function: Update view function if a country is clicked
       var updateView = function (countries, neighbors, selectedCountry) {
