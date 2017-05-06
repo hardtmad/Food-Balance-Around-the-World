@@ -99,7 +99,7 @@ d3.csv("2013.csv", function(sample) {
     	var maxSuff = d3.max(countries, function (d) { return d.suff });
 		var color = d3.scaleLinear()
 					  .domain([minSuff, maxSuff])
-					  .range([colorSet[0], colorSet[13]]);
+					  .range([colorSet[0], colorSet[24]]);
 
     // Helper function: Update view function if a country is clicked
     var updateView = function (countries, neighbors, selectedCountry) {
@@ -109,7 +109,7 @@ d3.csv("2013.csv", function(sample) {
         .data(countries)
         .attr('class', 'country')
         .attr('d', path)
-        .style('fill', function(d, i) { return color(d.color = d.id); })
+        .style('fill', function(d, i) { return color(d.color = d.suff); })
         .style('opacity', 1.0)
         .style('stroke', '#fff')
         .on("mouseover", function () {
