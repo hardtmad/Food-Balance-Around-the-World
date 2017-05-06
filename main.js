@@ -55,6 +55,7 @@
 
 var changeDataset = function(year) {
 
+	//Use dropdown menu to create file path
 	var fileName = "FAOdata/"
 	fileName += year;
 
@@ -177,8 +178,10 @@ var changeDataset = function(year) {
   }); // end d3.csv
 }
 
+//Initially render map with 2013 data by default
 changeDataset("2013.csv");
 
+//Create event listener to change dataset when different year is selected
 d3.select('#opts')
   .on('change', function() {
   	var newYear = d3.select(this).property('value');
@@ -245,14 +248,11 @@ function find_legend_data(name, data)
       results.push(entry);
   }
   for (r of results)
-    //console.log(r.Value);
   results = results.sort(function(a,b) {
     if (parseInt(a.Value) <= parseInt(b.Value))
       return 1
     else return -1});
-  //console.log("sorted!")
   for (r of results)
-    //console.log (r.Value)
   return results;
 }
 
