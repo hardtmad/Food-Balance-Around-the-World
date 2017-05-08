@@ -41,7 +41,7 @@ p span {
   display: inline;
   right: 10px;
   height: 75px;
-  width: 250px;
+  width: 260px;
   top: 10px;
   border: solid #14141f;
   border-width: 1px;
@@ -65,7 +65,7 @@ p span {
     display: block;
     float: left;
     height: 16px;
-    width: 230px;
+    width: 240px;
     margin-right: 5px;
     margin-left: 0;
     }
