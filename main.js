@@ -72,6 +72,8 @@ var changeDataset = function(year) {
                                           var thisElement = d.Element;
                                           return 'Element='+thisElement+';Country='+d.Country; } );
 
+     // console.log(countryDim.group().size())
+
      // Sum all production and supply values for each country
       var ElementCountry = (countryDim.group().reduceSum(function(d) 
           {
@@ -84,17 +86,19 @@ var changeDataset = function(year) {
           } ).all());
 
       // Score each country with the formula (prodcution/domestic supply)*100
+      var num_countries = countryDim.group().size()/2;
       var formulaResult = [];
-      for(i=0; i<175; i++) {
+      for(i=0; i<num_countries; i++) {
         var currentDict = {};
         // Change key to be country name
         currentDict.key = ElementCountry[i].key.replace("Element=Domestic supply quantity;Country=", "");
         // Calculate sufficiency score
-        currentDict.value = ElementCountry[i+175].value*100/ElementCountry[i].value;
+        currentDict.value = ElementCountry[i+num_countries].value*100/ElementCountry[i].value;
         formulaResult.push(currentDict);
       }
 
     // Loop over countries to match map  names with sufficiency scores
+    console.log(year)
           for (country of countries)
           {
             current_suff = find_suff(country.name, formulaResult)
@@ -102,7 +106,8 @@ var changeDataset = function(year) {
               country.suff = current_suff;
             else 
               country.suff = 0;
-        }
+            console.log(country.name + ": " + country.suff)
+          }
 
     // Scale color set based on max and min sufficiency scores
         var minSuff = d3.min(countries, function (d) { return d.suff });
