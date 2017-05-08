@@ -103,9 +103,14 @@
         var noZeroesSuff = countries.filter(function(d) { return d.suff !== 0; });
         var minSuff = d3.min(noZeroesSuff, function (d) { return d.suff });
         var maxSuff = d3.max(countries, function (d) { return d.suff });
-        var color = d3.scaleSqrt()
-                      .domain([minSuff, maxSuff])
-                      .range(["rgb(138, 255, 132)", "rgb(0, 0, 0)"]);
+        // var color = d3.scaleSqrt()
+        //               .domain([minSuff, maxSuff])
+        //               .range(["rgb(138, 255, 132)", "rgb(0, 0, 0)"]);
+
+        var color = d3.scaleQuantize()
+                        .domain([Math.sqrt(minSuff), Math.sqrt(maxSuff)])
+                        .range(["rgb(237, 248, 233)", "rgb(186, 228, 179)", "rgb(116, 196, 118)",
+                                "rgb(49, 163, 84)", "rgb(0, 109, 44)"]);
 
         // Helper function: Update view function if a country is clicked
         var updateView = function (countries, neighbors, selectedCountry) {
@@ -116,7 +121,8 @@
                .attr('class', 'country')
                .attr('d', path)
                .style('fill', function(d, i) { if (d.suff == 0) return 'd3d3d3'
-                                        else return color(d.color = d.suff); })
+                                        // else return color(d.color = d.suff); })
+                                        else return color(Math.sqrt(d.suff)); })
                .style('opacity', 1.0)
                .style('stroke', '#fff')
                .on("mouseover", function () {
@@ -180,6 +186,8 @@
       	var newYear = d3.select(this).property('value');
       	changeDataset(newYear);
     });
+
+      
   });// end d3.json
 }); // end d3.tsv
 
