@@ -110,7 +110,8 @@ var changeDataset = function(year) {
           }
 
     // Scale color set based on max and min sufficiency scores
-        var minSuff = d3.min(countries, function (d) { return d.suff });
+        var noZeroesSuff = countries.filter(function(d) { return d.suff !== 0; });
+        var minSuff = d3.min(noZeroesSuff, function (d) { return d.suff });
         var maxSuff = d3.max(countries, function (d) { return d.suff });
         var color = d3.scaleSqrt()
               .domain([minSuff, maxSuff])
@@ -124,7 +125,8 @@ var changeDataset = function(year) {
           .data(countries)
           .attr('class', 'country')
           .attr('d', path)
-          .style('fill', function(d, i) { return color(d.color = d.suff); })
+          .style('fill', function(d, i) { if (d.suff == 0) return 'd3d3d3'
+            else return color(d.color = d.suff); })
           .style('opacity', 1.0)
           .style('stroke', '#fff')
           .on("mouseover", function () {
