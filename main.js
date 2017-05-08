@@ -13,13 +13,6 @@
   var projection = d3.geoEquirectangular();
   var path = d3.geoPath().projection(projection);
 
-  // Calculate color set used to color countries
-  var colorSet = interpolateColors("rgb(138, 255, 132)", "rgb(0, 0, 0)", 10);
-
-  for (var j = 0; j < 10; j++) {
-    colorSet[j] = "rgb(" + colorSet[j][0] + "," + colorSet[j][1] + "," + colorSet[j][2] + ")";
-  }
-
   // Generate an SVG element on the page
   var svg = d3.select("body").append("svg")
       .attr("width", svg_width)
@@ -97,14 +90,12 @@ var changeDataset = function(year) {
               country.suff = 0;
           }
 
-    // Scale color set based on max and min sufficiency scores
+
+        // Scale color set based on max and min sufficiency scores
         var noZeroesSuff = countries.filter(function(d) { return d.suff !== 0; });
         var minSuff = d3.min(noZeroesSuff, function (d) { return d.suff });
         var maxSuff = d3.max(countries, function (d) { return d.suff });
-        var color = d3.scalePow(1.5)
-              .domain([minSuff, maxSuff])
-              .range([colorSet[0], colorSet[9]]);
-
+   
     // Show max and min sufficiency scores for year
     var suffText = getSuffText(minSuff, maxSuff, year);
     
@@ -117,113 +108,91 @@ var changeDataset = function(year) {
       .style.backgroundColor = color(maxSuff);
       document.getElementById("minColor")
       .style.backgroundColor = color(minSuff);
-
-    // Helper function: Update view function if a country is clicked
-      var updateView = function (countries, neighbors, selectedCountry) {
-      if (selectedCountry == null) {
-        document.getElementById("header").innerHTML = "Food Self-Sufficiency Worldwide (" + year.split(".")[0] + ")";
-        svg.selectAll('.country')
-          .data(countries)
-          .attr('class', 'country')
-          .attr('d', path)
-          .style('fill', function(d, i) { if (d.suff == 0) return 'd3d3d3'
-            else return color(d.color = d.suff); })
-          .style('opacity', 1.0)
-          .style('stroke', '#fff')
-          .on("mouseover", function () {
-            this.parentNode.appendChild(this);
-            d3.select(this)
-            .style('stroke', '#000');
-          })
-          .on("mouseout", function() {
-            d3.select(this)
-            .style('stroke', '#fff');
-          })
-          .on("click", function(d) {
-            updateView(countries, neighbors, d);
-          });
-          document.getElementById("legend")
-           .innerHTML = ("");
-          document.getElementById("legend")
-           .style.border = "0px";  
-      } 
-      else {
-        document.getElementById("header").innerHTML = "Food Self-Sufficiency in " + selectedCountry.name + " (" + year.split(".")[0] + ")";
-        svg.selectAll('.country')
-          .data(countries)
-          .attr('class', 'country')
-          .attr('d', path)
-          .style('stroke', '#fff')
-          .style('opacity', function(d) { if (d.id != selectedCountry.id)
-            return 0.5;
-          })
-          .on("mouseover", function () {})
-          .on("mouseout", function () {})
-          .on("click", function(d) {
-            updateView(countries, neighbors, null);
-          });
-          var legendText = getLegendText(selectedCountry, year_data, year);
-        document.getElementById("legend")
-          .append(legendText);
-        document.getElementById("legend")
-          .style.border = "solid #3d3d5c";
-        }
-      };
-
-      //Fill in countries by distinct colors
-      svg.selectAll('.country')
-              .data(countries)
-              .enter()
-              .append('path')
-                .attr('class', 'country')
-                .attr('d', path);
-
-      updateView(countries, neighbors, null);
-
-  }); // end d3.csv
 }
+        var color = d3.scaleSqrt()
+                      .domain([minSuff, maxSuff])
+                      .range(["rgb(138, 255, 132)", "rgb(0, 0, 0)"]);
 
-//Initially render map with 2013 data by default
-changeDataset("2013.csv");
+        // Helper function: Update view function if a country is clicked
+        var updateView = function (countries, neighbors, selectedCountry) {
+          if (selectedCountry == null) {
+            document.getElementById("header").innerHTML = "Food Self-Sufficiency Worldwide (" + year.split(".")[0] + ")";
+            svg.selectAll('.country')
+               .data(countries)
+               .attr('class', 'country')
+               .attr('d', path)
+               .style('fill', function(d, i) { if (d.suff == 0) return 'd3d3d3'
+                                        else return color(d.color = d.suff); })
+               .style('opacity', 1.0)
+               .style('stroke', '#fff')
+               .on("mouseover", function () {
+                  this.parentNode.appendChild(this);
+                  d3.select(this)
+                    .style('stroke', '#000');
+               })
+               .on("mouseout", function() {
+                  d3.select(this)
+                    .style('stroke', '#fff');
+               })
+               .on("click", function(d) {
+                  updateView(countries, neighbors, d);
+               });
+            document.getElementById("legend")
+                    .innerHTML = ("");
+            document.getElementById("legend")
+                    .style.border = "0px";  
+          } 
+          else {
+            document.getElementById("header").innerHTML = "Food Self-Sufficiency in " + selectedCountry.name + " (" + year.split(".")[0] + ")";
+            svg.selectAll('.country')
+               .data(countries)
+               .attr('class', 'country')
+               .attr('d', path)
+               .style('stroke', '#fff')
+               .style('opacity', function(d) { if (d.id != selectedCountry.id)
+                  return 0.5;
+               })
+               .on("mouseover", function () {})
+               .on("mouseout", function () {})
+               .on("click", function(d) {
+                  updateView(countries, neighbors, null);
+               });
+            var legendText = getLegendText(selectedCountry, year_data, year);
+            document.getElementById("legend")
+                    .append(legendText);
+            document.getElementById("legend")
+                    .style.border = "solid #000000";      
+          }
+        };
 
-//Create event listener to change dataset when different year is selected
-d3.select('#opts')
-  .on('change', function() {
-  	var newYear = d3.select(this).property('value');
-  	changeDataset(newYear);
-  });
-});// end d3.json
+        //Fill in countries by distinct colors
+        svg.selectAll('.country')
+           .data(countries)
+           .enter()
+           .append('path')
+           .attr('class', 'country')
+           .attr('d', path);
+
+        updateView(countries, neighbors, null);
+      }); // end d3.csv
+    }
+
+
+    //Initially render map with 2013 data by default
+    changeDataset("2013.csv");
+
+    //Create event listener to change dataset when different year is selected
+    d3.select('#opts')
+      .on('change', function() {
+      	var newYear = d3.select(this).property('value');
+      	changeDataset(newYear);
+    });
+  });// end d3.json
 }); // end d3.tsv
 
 /*  ----------------------
     ---HELPER FUNCTIONS---
     ---------------------- */
-
-//Citation: Interpolate color functions taken from
-//https://graphicdesign.stackexchange.com/questions/83866/generating-a-series-of-colors-between-two-colors
-var interpolateColor = function (color1, color2, factor) {
-if (arguments.length < 3) { 
-    factor = 0.5; 
-}
-var result = color1.slice();
-for (var i = 0; i < 3; i++) {
-    result[i] = Math.round(result[i] + factor * (color2[i] - color1[i]));
-}
-return result;
-};
-
-var interpolateColors = function (color1, color2, steps) {
-  var stepFactor = 1 / (steps - 1),
-  interpolatedColorArray = [];
-
-  color1 = color1.match(/\d+/g).map(Number);
-  color2 = color2.match(/\d+/g).map(Number);
-  for(var i = 0; i < steps; i++) {
-    interpolatedColorArray.push(interpolateColor(color1, color2, stepFactor * i));
-  }
-
-  return interpolatedColorArray; 
-};
 
 // Helper function to find id in country_names
 function find_name (id, country_names) {
