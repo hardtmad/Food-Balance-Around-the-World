@@ -90,28 +90,27 @@ var changeDataset = function(year) {
               country.suff = 0;
           }
 
-
-        // Scale color set based on max and min sufficiency scores
+  // Scale color set based on max and min sufficiency scores
         var noZeroesSuff = countries.filter(function(d) { return d.suff !== 0; });
         var minSuff = d3.min(noZeroesSuff, function (d) { return d.suff });
         var maxSuff = d3.max(countries, function (d) { return d.suff });
+
+  // Define color function
+  var color = d3.scalePow(1.2)
+                      .domain([minSuff, maxSuff])
+                      .interpolate(d3.interpolateHcl)
+                      .range(["rgb(236, 255, 179)", "rgb(0, 51, 153)"]);
    
     // Show max and min sufficiency scores for year
     var suffText = getSuffText(minSuff, maxSuff, year);
-    
     var maxSuffLabel = document.getElementById("max");
     max.innerHTML = suffText[0];
     var minSuffLabel = document.getElementById("min");
     min.innerHTML = suffText[1];
-
     document.getElementById("maxColor")
       .style.backgroundColor = color(maxSuff);
       document.getElementById("minColor")
       .style.backgroundColor = color(minSuff);
-}
-        var color = d3.scaleSqrt()
-                      .domain([minSuff, maxSuff])
-                      .range(["rgb(138, 255, 132)", "rgb(0, 0, 0)"]);
 
         // Helper function: Update view function if a country is clicked
         var updateView = function (countries, neighbors, selectedCountry) {
@@ -176,8 +175,7 @@ var changeDataset = function(year) {
         updateView(countries, neighbors, null);
       }); // end d3.csv
     }
-
-
+    
     //Initially render map with 2013 data by default
     changeDataset("2013.csv");
 

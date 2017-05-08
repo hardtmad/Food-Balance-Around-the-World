@@ -27,16 +27,18 @@ p span {
 }
 
 .legendBox{
+  display: inline;
   position: absolute;
   margin-left: 5px;
-  margin-top: 170px;
-  height: 300px;
+  margin-top: 230px;
+  height: 230px;
   width: 220;
   border-width: 1px;
 }
 
 .suffBox {
   position: absolute;
+  display: inline;
   right: 10px;
   height: 75px;
   width: 250px;
