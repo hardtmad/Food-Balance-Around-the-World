@@ -42,17 +42,7 @@
           country.name = find_name(country.id, country_names);
         }
 
-    /*  ----------------------
-      ---------LEGEND---------
-      ---------------------- */
-    // Adjust div with legend information
-    var d = document.getElementById('legend');
-    d.style.position = "absolute";
-    d.style.left = 10 + 'px';
-    d.style.top = 280 + 'px';
-    d.style.height = 300 + 'px';
-    d.style.width = 220 + 'px';
-
+// Function to update map when new year is selected
 var changeDataset = function(year) {
 
 	//Use dropdown menu to create file path
@@ -73,7 +63,6 @@ var changeDataset = function(year) {
                                           var thisElement = d.Element;
                                           return 'Element='+thisElement+';Country='+d.Country; } );
 
-     // console.log(countryDim.group().size())
 
      // Sum all production and supply values for each country
       var ElementCountry = (countryDim.group().reduceSum(function(d) 
@@ -98,8 +87,7 @@ var changeDataset = function(year) {
         formulaResult.push(currentDict);
       }
 
-    // Loop over countries to match map  names with sufficiency scores
-    console.log(year)
+    // Loop over countries to match map names with sufficiency scores
           for (country of countries)
           {
             current_suff = find_suff(country.name, formulaResult)
@@ -107,16 +95,28 @@ var changeDataset = function(year) {
               country.suff = current_suff;
             else 
               country.suff = 0;
-            console.log(country.name + ": " + country.suff)
           }
 
     // Scale color set based on max and min sufficiency scores
         var noZeroesSuff = countries.filter(function(d) { return d.suff !== 0; });
         var minSuff = d3.min(noZeroesSuff, function (d) { return d.suff });
         var maxSuff = d3.max(countries, function (d) { return d.suff });
-        var color = d3.scaleSqrt()
+        var color = d3.scalePow(1.5)
               .domain([minSuff, maxSuff])
               .range([colorSet[0], colorSet[9]]);
+
+    // Show max and min sufficiency scores for year
+    var suffText = getSuffText(minSuff, maxSuff, year);
+    
+    var maxSuffLabel = document.getElementById("max");
+    max.innerHTML = suffText[0];
+    var minSuffLabel = document.getElementById("min");
+    min.innerHTML = suffText[1];
+
+    document.getElementById("maxColor")
+      .style.backgroundColor = color(maxSuff);
+      document.getElementById("minColor")
+      .style.backgroundColor = color(minSuff);
 
     // Helper function: Update view function if a country is clicked
       var updateView = function (countries, neighbors, selectedCountry) {
@@ -166,7 +166,7 @@ var changeDataset = function(year) {
         document.getElementById("legend")
           .append(legendText);
         document.getElementById("legend")
-          .style.border = "solid #000000";      
+          .style.border = "solid #3d3d5c";
         }
       };
 
@@ -281,4 +281,14 @@ function getLegendText(country, data, year) {
     }
   }
   return str;
+};
+
+// Helper function to generate sufficiency key text
+function getSuffText(minSuff, maxSuff, year) {
+  var maxStr = "Maximum sufficiency score in " + (year.split(".")[0]) + ": " +  parseFloat(maxSuff).toFixed(2) + ".";
+  var minStr = "Minimum sufficiency score in " + (year.split(".")[0]) + ": " +  parseFloat(minSuff).toFixed(2) + ".";
+  var arr = [];
+  arr.push(maxStr);
+  arr.push(minStr)
+  return arr;
 };
