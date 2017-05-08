@@ -25,3 +25,63 @@ p span {
 	white-space:pre-wrap;
 	padding: 5px 5px 5px 5px;
 }
+
+.legendBox{
+  position: absolute;
+  margin-left: 5px;
+  margin-top: 170px;
+  height: 300px;
+  width: 220;
+  border-width: 1px;
+}
+
+.suffBox {
+  position: absolute;
+  right: 10px;
+  height: 75px;
+  width: 250px;
+  top: 10px;
+  border: solid #14141f;
+  border-width: 1px;
+  }
+
+.suffScale ul {
+    margin: 4px;
+    margin-bottom: 5px;
+    padding: 4px;
+    float: left;
+    list-style: none;
+    }
+.suffScale ul li {
+    font-size: 80%;
+    list-style: none;
+    margin-left: 0;
+    line-height: 18px;
+    margin-bottom: 2px;
+    }
+.suffLabels li span {
+    display: block;
+    float: left;
+    height: 16px;
+    width: 230px;
+    margin-right: 5px;
+    margin-left: 0;
+    }
+.suffColorLabels li span {
+    display: block;
+    float: left;
+    height: 16px;
+    width: 30px;
+    margin-right: 5px;
+    margin-left: 0;
+    border: 1px solid #999;
+    }
+.suffTextLabels li span {
+  display: inline;
+  float: right;
+  height: 16px;
+  width: 300px;
+  margin-right: 5px;
+  margin-left: 0;
+  border: 1px solid #999;
+}

@@ -35,74 +35,80 @@
           country.name = find_name(country.id, country_names);
         }
 
+// Function to update map when new year is selected
+var changeDataset = function(year) {
+
+	//Use dropdown menu to create file path
+	var fileName = "FAOdata/"
+	fileName += year;
+
+  // Pull in FAO data 
+  d3.csv(fileName, function(year_data) {
+
     /*  ----------------------
-      ---------LEGEND---------
-      ---------------------- */
-    // Adjust div with legend information
-    var d = document.getElementById('legend');
-    d.style.position = "absolute";
-    d.style.left = 10 + 'px';
-    d.style.top = 280 + 'px';
-    d.style.height = 300 + 'px';
-    d.style.width = 220 + 'px';
+        ---------DATA---------
+        ---------------------- */
 
-    var changeDataset = function(year) {
+      // Use crossfilter for FAO data
+      var amounts = crossfilter(year_data);
+      // Make a dimension with the Country field, group by Element and Country
+      var countryDim = amounts.dimension(function (d) { 
+                                          var thisElement = d.Element;
+                                          return 'Element='+thisElement+';Country='+d.Country; } );
 
-    	//Use dropdown menu to create file path
-    	var fileName = "FAOdata/"
-    	fileName += year;
 
-      // Pull in FAO data 
-      d3.csv(fileName, function(year_data) {
+     // Sum all production and supply values for each country
+      var ElementCountry = (countryDim.group().reduceSum(function(d) 
+          {
+            if (d.Element == "Domestic supply quantity")  
+              { 
+                return d.Value}
+            else 
+              { 
+                return d.Value}
+          } ).all());
 
-      /*  ----------------------
-          ---------DATA---------
-          ---------------------- */
+      // Score each country with the formula (prodcution/domestic supply)*100
+      var num_countries = countryDim.group().size()/2;
+      var formulaResult = [];
+      for(i=0; i<num_countries; i++) {
+        var currentDict = {};
+        // Change key to be country name
+        currentDict.key = ElementCountry[i].key.replace("Element=Domestic supply quantity;Country=", "");
+        // Calculate sufficiency score
+        currentDict.value = ElementCountry[i+num_countries].value*100/ElementCountry[i].value;
+        formulaResult.push(currentDict);
+      }
 
-        // Use crossfilter for FAO data
-        var amounts = crossfilter(year_data);
-        // Make a dimension with the Country field, group by Element and Country
-        var countryDim = amounts.dimension(function (d) { 
-                                            var thisElement = d.Element;
-                                            return 'Element='+thisElement+';Country='+d.Country; } );
+    // Loop over countries to match map names with sufficiency scores
+          for (country of countries)
+          {
+            current_suff = find_suff(country.name, formulaResult)
+            if (current_suff)
+              country.suff = current_suff;
+            else 
+              country.suff = 0;
+          }
 
-        // Sum all production and supply values for each country
-        var ElementCountry = (countryDim.group().reduceSum(function(d) 
-            {
-              if (d.Element == "Domestic supply quantity")  
-                { 
-                  return d.Value}
-              else 
-                { 
-                  return d.Value}
-            } ).all());
-
-        // Score each country with the formula (prodcution/domestic supply)*100
-        var num_countries = countryDim.group().size()/2;
-        var formulaResult = [];
-        for(i=0; i<num_countries; i++) {
-          var currentDict = {};
-          // Change key to be country name
-          currentDict.key = ElementCountry[i].key.replace("Element=Domestic supply quantity;Country=", "");
-          // Calculate sufficiency score
-          currentDict.value = ElementCountry[i+num_countries].value*100/ElementCountry[i].value;
-          formulaResult.push(currentDict);
-        }
-
-        // Loop over countries to match map  names with sufficiency scores
-        for (country of countries)
-        {
-          current_suff = find_suff(country.name, formulaResult)
-          if (current_suff)
-            country.suff = current_suff;
-          else 
-            country.suff = 0;
-        }
 
         // Scale color set based on max and min sufficiency scores
         var noZeroesSuff = countries.filter(function(d) { return d.suff !== 0; });
         var minSuff = d3.min(noZeroesSuff, function (d) { return d.suff });
         var maxSuff = d3.max(countries, function (d) { return d.suff });
+   
+    // Show max and min sufficiency scores for year
+    var suffText = getSuffText(minSuff, maxSuff, year);
+    
+    var maxSuffLabel = document.getElementById("max");
+    max.innerHTML = suffText[0];
+    var minSuffLabel = document.getElementById("min");
+    min.innerHTML = suffText[1];
+
+    document.getElementById("maxColor")
+      .style.backgroundColor = color(maxSuff);
+      document.getElementById("minColor")
+      .style.backgroundColor = color(minSuff);
+}
         var color = d3.scaleSqrt()
                       .domain([minSuff, maxSuff])
                       .range(["rgb(138, 255, 132)", "rgb(0, 0, 0)"]);
@@ -170,6 +176,7 @@
         updateView(countries, neighbors, null);
       }); // end d3.csv
     }
+
 
     //Initially render map with 2013 data by default
     changeDataset("2013.csv");
@@ -243,4 +250,14 @@ function getLegendText(country, data, year) {
     }
   }
   return str;
+};
+
+// Helper function to generate sufficiency key text
+function getSuffText(minSuff, maxSuff, year) {
+  var maxStr = "Maximum sufficiency score in " + (year.split(".")[0]) + ": " +  parseFloat(maxSuff).toFixed(2) + ".";
+  var minStr = "Minimum sufficiency score in " + (year.split(".")[0]) + ": " +  parseFloat(minSuff).toFixed(2) + ".";
+  var arr = [];
+  arr.push(maxStr);
+  arr.push(minStr)
+  return arr;
 };
